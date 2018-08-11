@@ -7,6 +7,12 @@ module.exports = {
     path: __dirname + '/public/js/',
     filename: '[name].js',
   },
+  devServer: {
+    contentBase: 'public',
+    port: 3000,
+    inline: true,
+    hot: true
+  },
   module: {
     rules: [
       {

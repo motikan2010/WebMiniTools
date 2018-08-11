@@ -5,37 +5,52 @@ class App extends React.Component {
 
   constructor() {
     super();
-  }
+    this.state = {
+      resultHtmlLineArray: [],
+      colorMap: {}
+    };
 
-  componentWillMount() {
-
+    this.onExec = this.onExec.bind(this);
   }
 
   onExec() {
-    let targetText = document.getElementById('target-text').value;
-    let targetTextArray = targetText.split(/\r\n|\r|\n/);
-    let resultHtml = '';
-    let discoverMap = {};
+    let targetTextArray = document.getElementById('target-text').value.split(/\r\n|\r|\n/);
+    let colorMap = {};
+    let htmlLineArray = [];
+
     targetTextArray.forEach(function(line) {
-      let textColorCode = discoverMap[line];
-      console.log(textColorCode);
-      if (textColorCode !== undefined) {
-        resultHtml += '<span style="color:' + textColorCode + '">' + line + '</span>\n';
+      htmlLineArray.push(line);
+
+      let textColorCode = colorMap[line];
+      if (textColorCode === undefined) {
+        colorMap[line] = '#000000';
       } else {
-        resultHtml += line + '\n';
         // 文字色生成
-        let color = (Math.random() * 0xFFFFFF | 0).toString(16);
-        discoverMap[line] = '#' + ("000000" + color).slice(-6);
+        colorMap[line] = '#' + ("000000" + (Math.random() * 0xFFFFFF | 0).toString(16)).slice(-6);
       }
     });
-    document.getElementById('output-area').innerHTML = resultHtml;
+
+    this.setState({
+      resultHtmlLineArray: htmlLineArray,
+      colorMap: colorMap,
+    });
   }
+
   render () {
+    let resultHtml = this.state.resultHtmlLineArray.map((line, i) => {
+      let colorCode = this.state.colorMap[line];
+      if (colorCode === undefined) {
+        return <div key={i}><span>{line}</span><br/></div>
+      } else {
+        return <div key={i}><span style={{color: colorCode}}>{line}</span><br/></div>
+      }
+    });
+
     return (
         <div>
           <textarea id="target-text"/>
           <button onClick={this.onExec}>実行</button>
-          <pre id="output-area"/>
+          <div>{resultHtml}</div>
         </div>
     );
   }
